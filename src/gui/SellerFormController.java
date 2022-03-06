@@ -1,9 +1,11 @@
 package gui;
 
 import java.net.URL;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -125,10 +127,30 @@ public class SellerFormController implements Initializable {
 		obj.setId(Utils.tryParseToInt(txtId.getText()));
 		
 		if (txtName.getText() == null || txtName.getText().trim().equals("")) {
-			validationException.addError("name", "Field can't be empty");
+			validationException.addError("name", "O campo está vazio");
 		}
 		obj.setName(txtName.getText());
-
+		
+		if (txtEmail.getText() == null || txtEmail.getText().trim().equals("")) {
+			validationException.addError("email", "O campo está vazio");
+		}
+		obj.setEmail(txtEmail.getText());
+		
+		if (dpBirthDate.getValue() == null) {
+			validationException.addError("birthDate", "O campo está vazio");
+		}
+		else {
+			Instant instant = Instant.from(dpBirthDate.getValue().atStartOfDay(ZoneId.systemDefault()));
+			obj.setBirthDate(Date.from(instant));
+		}
+		
+		if (txtBaseSalary.getText() == null || txtBaseSalary.getText().trim().equals("")) {
+			validationException.addError("baseSalary", "O campo está vazio");
+		}
+		obj.setBaseSalary(Utils.tryParseToDouble(txtBaseSalary.getText()));
+		
+		obj.setDepartment(comboBoxDepartment.getValue());
+		
 		if (validationException.getErrors().size() > 0) {
 			throw validationException;
 		}
@@ -197,10 +219,11 @@ public class SellerFormController implements Initializable {
 	private void setErrorMessages(Map<String, String> error) {
 		Set<String> fields = error.keySet();
 	
-		if (fields.contains("name")) {
-			labelErrorName.setText(error.get("name"));
-		}
-	
+		labelErrorName.setText((fields.contains("name") ? error.get("name") : ""));
+		labelErrorEmail.setText((fields.contains("email") ? error.get("email") : ""));
+		labelErrorBaseSalary.setText((fields.contains("baseSalary") ? error.get("baseSalary") : ""));
+		labelErrorBirthDate.setText((fields.contains("birthDate") ? error.get("birthDate") : ""));
+		
 	}
 	
 	private void initializeComboBoxDepartment() { 
